@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { COLOR_THEMES, MIN_WIDTH, MIN_HEIGHT, resolveTheme } from '../utils/constants';
 import { useDrag, useResize } from '../hooks/useDrag';
 import RichEditor from './RichEditor';
@@ -17,7 +18,7 @@ export default function Card({
   const [editingTitle, setEditingTitle] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [colorPickerPosition, setColorPickerPosition] = useState({ left: 'auto', right: 0 });
+  const [colorPickerPosition, setColorPickerPosition] = useState({ top: 0, left: 0 });
   const titleInputRef = useRef(null);
   const colorPickerRef = useRef(null);
   const colorButtonRef = useRef(null);
@@ -26,7 +27,10 @@ export default function Card({
   useEffect(() => {
     if (!showColorPicker) return;
     const h = (e) => {
-      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target)) {
+      if (
+        colorPickerRef.current && !colorPickerRef.current.contains(e.target) &&
+        !e.target.closest?.('[data-color-picker]')
+      ) {
         // Small delay to allow button click to register
         setTimeout(() => setShowColorPicker(false), 10);
       }
@@ -84,10 +88,10 @@ export default function Card({
       }}
       onClick={(e) => {
         if (inArrowMode) {
-          // Critical: Stop all propagation and prevent default
+          // Propagation is already stopped by the overlay div inside;
+          // this handler only fires for non-overlay clicks (safety net).
           e.stopPropagation();
           e.preventDefault();
-          onCardClickInArrowMode(card.id);
         }
       }}
       style={{
@@ -108,6 +112,20 @@ export default function Card({
         WebkitBackdropFilter: 'blur(10px)',
       }}
     >
+      {/* Arrow-mode click capture overlay — ensures clicks register reliably
+          regardless of which inner element (editor, resize handle, footer)
+          would otherwise intercept the mouse event. */}
+      {inArrowMode && (
+        <div
+          onMouseDown={(e) => { e.stopPropagation(); e.preventDefault(); }}
+          onClick={(e) => { e.stopPropagation(); e.preventDefault(); onCardClickInArrowMode(card.id); }}
+          style={{
+            position: 'absolute', inset: 0, zIndex: 50,
+            cursor: 'crosshair', background: 'transparent',
+          }}
+        />
+      )}
+
       {/* ── Header ── */}
       <div
         className="card-drag-handle"
@@ -199,22 +217,27 @@ export default function Card({
                 className="card-btn"
                 onClick={(e) => {
                   if (!showColorPicker) {
-                    // Calculate position to avoid viewport overflow
+                    // Calculate fixed viewport position to avoid overflow (picker is portaled to body)
                     const buttonRect = e.currentTarget.getBoundingClientRect();
-                    const pickerWidth = 176;
-                    const windowWidth = window.innerWidth;
-                    const margin = 20; // Minimum margin from screen edge
+                    const pickerWidth = 204;
+                    const pickerHeight = 132; // ~2 rows + padding
+                    const margin = 12;
+                    const edgeMargin = 12;
 
-                    // Check if picker would overflow on the right
-                    const spaceOnRight = windowWidth - buttonRect.right;
-
-                    if (spaceOnRight < pickerWidth + margin) {
-                      // Not enough space on right, position on left
-                      setColorPickerPosition({ right: 'auto', left: 0 });
-                    } else {
-                      // Enough space on right, use default positioning
-                      setColorPickerPosition({ left: 'auto', right: 0 });
+                    let left = buttonRect.right - pickerWidth; // align right edge with button by default
+                    if (left < edgeMargin) left = buttonRect.left;
+                    if (left + pickerWidth + edgeMargin > window.innerWidth) {
+                      left = window.innerWidth - pickerWidth - edgeMargin;
                     }
+                    left = Math.max(edgeMargin, left);
+
+                    let top = buttonRect.bottom + margin;
+                    if (top + pickerHeight + edgeMargin > window.innerHeight) {
+                      top = buttonRect.top - pickerHeight - margin;
+                    }
+                    top = Math.max(edgeMargin, top);
+
+                    setColorPickerPosition({ top, left });
                   }
                   setShowColorPicker(v => !v);
                 }}
@@ -227,13 +250,12 @@ export default function Card({
                   <circle cx="14.5" cy="7.5" r="1.5"/><circle cx="17.5" cy="11.5" r="1.5"/>
                 </svg>
               </button>
-              {showColorPicker && (
+              {showColorPicker && createPortal(
                 <div data-color-picker="true" style={{
-                  position: 'absolute',
-                  top: '100%',
-                  ...colorPickerPosition,
-                  marginTop: 6,
-                  zIndex: 10000,
+                  position: 'fixed',
+                  top: colorPickerPosition.top,
+                  left: colorPickerPosition.left,
+                  zIndex: 100000,
                   background: isDark ? 'rgba(28,28,30,0.98)' : 'rgba(255,255,255,0.98)',
                   backdropFilter: 'blur(40px)',
                   WebkitBackdropFilter: 'blur(40px)',
@@ -243,7 +265,7 @@ export default function Card({
                   display: 'grid',
                   gridTemplateColumns: 'repeat(4,1fr)',
                   gap: 10,
-                  width: 176,
+                  width: 204,
                   boxShadow: isDark
                     ? '0 16px 48px rgba(0,0,0,0.6), 0 4px 16px rgba(0,0,0,0.4)'
                     : '0 16px 48px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06)',
@@ -276,7 +298,8 @@ export default function Card({
                       />
                     );
                   })}
-                </div>
+                </div>,
+                document.body
               )}
             </div>
             {/* Delete */}

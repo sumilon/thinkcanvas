@@ -152,7 +152,7 @@ export default function Sidebar({ pages, activePageId, onSelectPage, onAddPage, 
                     const windowWidth = window.innerWidth;
                     const pickerHeight = 200;
                     // Actual picker width: 168px (content) + 24px (padding) + 2px (border) = 194px
-                    const pickerWidth = 194;
+                    const pickerWidth = 210;
                     const margin = 12; // Margin between icon and picker
                     const edgeMargin = 20; // Margin from screen edge for visibility
                     const shadowBuffer = 30; // Extra space for shadow and visual effects
@@ -333,7 +333,7 @@ export default function Sidebar({ pages, activePageId, onSelectPage, onAddPage, 
         boxShadow: dk
           ? '0 20px 60px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4)'
           : '0 20px 60px rgba(0,0,0,0.15), 0 8px 24px rgba(0,0,0,0.08)',
-        width: 168,
+        width: 186,
         pointerEvents: 'auto',
       }}>
         {PAGE_ICONS.map(icon => {

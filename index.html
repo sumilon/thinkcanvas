@@ -3,26 +3,62 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+
+    <!-- Theme colour for browser chrome -->
     <meta name="theme-color" content="#f5f5f7" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#000000"  media="(prefers-color-scheme: dark)"  />
+
+    <!-- PWA / mobile -->
+    <meta name="mobile-web-app-capable"             content="yes" />
+    <meta name="apple-mobile-web-app-capable"       content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white'>⚡</text></svg>" />
-    <title>ThinkCanvas</title>
+    <meta name="apple-mobile-web-app-title"         content="ThinkCanvas" />
+
+    <!-- SEO -->
     <meta name="description" content="ThinkCanvas — Think visually. Connect deeply." />
+    <meta name="robots"      content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:title"       content="ThinkCanvas" />
+    <meta property="og:description" content="Think visually. Connect deeply." />
+    <meta property="og:type"        content="website" />
+
+    <!-- Favicon — SVG first, png fallback for older browsers -->
+    <link rel="icon"             type="image/svg+xml" href="/favicon.svg" />
+    <link rel="alternate icon"   type="image/png"     href="/favicon.svg" />
+    <link rel="apple-touch-icon"                      href="/favicon.svg" />
+
+    <title>ThinkCanvas</title>
+
+    <!--
+      Inter font — preconnect for speed, loaded from Google Fonts.
+      swap display prevents FOIT; text=... subsetting reduces payload.
+    -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
+      /* Prevent FOUC / layout shift */
       html, body { margin: 0; padding: 0; }
-      /* Prevent flash of wrong theme */
-      html[data-theme='dark'] { background: #000000; }
+      html[data-theme='dark']  { background: #000000; }
       html[data-theme='light'] { background: #f5f5f7; }
+
       /* Prevent iOS zoom on input focus */
       @supports (-webkit-touch-callout: none) {
-        input, textarea, select {
-          font-size: 16px !important;
-        }
+        input, textarea, select { font-size: 16px !important; }
+      }
+
+      /* Skeleton loader — shown until React mounts */
+      #root:empty::before {
+        content: '';
+        display: block;
+        width: 100vw;
+        height: 100dvh;
+        background: inherit;
       }
     </style>
   </head>

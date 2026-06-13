@@ -370,6 +370,14 @@ export default function App() {
     });
   }, [cards, searchTerm]);
 
+  // When a search is active, only show arrows where BOTH endpoint cards are visible.
+  // This keeps the canvas clean — no floating arrows pointing to hidden cards.
+  const visibleArrows = useMemo(() => {
+    if (!searchTerm || !searchTerm.trim()) return arrows;
+    const visibleIds = new Set(visibleCards.map(c => c.id));
+    return arrows.filter(a => visibleIds.has(a.fromId) && visibleIds.has(a.toId));
+  }, [arrows, visibleCards, searchTerm]);
+
   const canvasHeight = useMemo(() => {
     if (isMobile) return 'auto';
     return Math.max(window.innerHeight - 56, cards.reduce((m, c) => Math.max(m, (c.y || 0) + (c.height || DEFAULT_HEIGHT) + 120), window.innerHeight - 56));
@@ -433,7 +441,7 @@ export default function App() {
       {snapEnabled && !isMobile && (
         <div style={{
           position: 'fixed', inset: 0, zIndex: 1, pointerEvents: 'none',
-          backgroundImage: `radial-gradient(circle, ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'} 1.5px, transparent 1.5px)`,
+          backgroundImage: `radial-gradient(circle, ${isDark ? 'rgba(255,255,255,0.22)' : 'rgba(0,0,0,0.16)'} 1.8px, transparent 1.8px)`,
           backgroundSize: '24px 24px', backgroundPosition: `${left}px 56px`,
           opacity: 1,
         }} />
@@ -453,7 +461,7 @@ export default function App() {
         }}
       >
         {!isMobile && (
-          <ArrowLayer arrows={arrows} cards={visibleCards}
+          <ArrowLayer arrows={visibleArrows} cards={cards}
             selectedArrowId={selectedArrowId} onSelectArrow={setSelectedArrowId}
             onDeleteArrow={deleteArrow} drawingArrow={drawingArrow} isDark={isDark} />
         )}
