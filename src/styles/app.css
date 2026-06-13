@@ -1,0 +1,254 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', 'Segoe UI', system-ui, sans-serif;
+  background: #f5f5f7;
+  overflow-x: hidden;
+  letter-spacing: -0.01em;
+}
+[data-theme='dark'] body { background: #000000; }
+
+/* ── Canvas ─────────────────────────────── */
+.canvas {
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ── Cards ──────────────────────────────── */
+.card {
+  transition: box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.2s ease,
+              transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  will-change: transform;
+}
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.06),
+              0 12px 40px rgba(0,0,0,0.08),
+              0 0 0 0.5px rgba(0,0,0,0.03) !important;
+  transform: translateY(-1px) scale(1.001);
+}
+[data-theme='dark'] .card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.6),
+              0 12px 48px rgba(0,0,0,0.5),
+              0 0 0 0.5px rgba(255,255,255,0.05) !important;
+}
+.card:hover .resize-handle { opacity: 0.7 !important; }
+.card-drag-handle:active { cursor: grabbing !important; }
+
+/* Arrow mode: cards glow on hover */
+.card--arrow-mode {
+  transition: box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.2s ease,
+              transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card--arrow-mode:hover {
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.25),
+              0 8px 24px rgba(99,102,241,0.15),
+              0 4px 12px rgba(0,0,0,0.1) !important;
+  border-color: #6366f1 !important;
+  transform: scale(1.01);
+}
+
+/* ── Card action buttons ─────────────────── */
+.card-btn {
+  background: none; border: none; cursor: pointer;
+  padding: 5px 6px; border-radius: 7px; opacity: 0.5;
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; align-items: center; justify-content: center;
+}
+.card-btn:hover {
+  opacity: 1;
+  background: rgba(0,0,0,0.05);
+  transform: scale(1.05);
+}
+[data-theme='dark'] .card-btn:hover { background: rgba(255,255,255,0.1); }
+.card-btn:active { transform: scale(0.95); }
+
+/* ── Rich editor ─────────────────────────── */
+.rich-editor {
+  font-size: 13.5px;
+  line-height: 1.7;
+  letter-spacing: -0.003em;
+}
+
+.editor-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 2px;
+  padding: 6px 0 8px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  margin-bottom: 10px;
+}
+[data-theme='dark'] .editor-toolbar { border-bottom-color: rgba(255,255,255,0.08); }
+
+.editor-toolbar button {
+  background: none; border: none; cursor: pointer;
+  padding: 5px 7px; border-radius: 6px; font-family: inherit;
+  color: inherit;
+  transition: background 0.15s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; align-items: center; justify-content: center;
+  height: 28px;
+}
+.editor-toolbar button:hover {
+  background: rgba(0,0,0,0.08);
+  transform: scale(1.05);
+}
+.editor-toolbar button:active {
+  transform: scale(0.95);
+}
+.editor-toolbar button.active {
+  background: rgba(99,102,241,0.12);
+  color: #6366f1;
+}
+[data-theme='dark'] .editor-toolbar button:hover { background: rgba(255,255,255,0.12); }
+[data-theme='dark'] .editor-toolbar button.active {
+  background: rgba(99,102,241,0.2);
+  color: #a5b4fc;
+}
+
+.editor-toolbar .sep {
+  width: 1px; background: currentColor; opacity: 0.1;
+  margin: 4px 4px; align-self: stretch;
+}
+
+/* ── TipTap content ──────────────────────── */
+.editor-content {
+  outline: none;
+  min-height: 60px;
+}
+.editor-content .ProseMirror {
+  outline: none;
+  min-height: 58px;
+}
+.editor-content .ProseMirror > * + * { margin-top: 6px; }
+.editor-content .ProseMirror p { margin-bottom: 5px; }
+.editor-content .ProseMirror h1 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.25;
+  letter-spacing: -0.5px;
+}
+.editor-content .ProseMirror h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
+}
+.editor-content .ProseMirror h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  letter-spacing: -0.2px;
+}
+.editor-content .ProseMirror ul,
+.editor-content .ProseMirror ol { padding-left: 22px; margin-bottom: 6px; }
+.editor-content .ProseMirror li { margin-bottom: 3px; }
+.editor-content .ProseMirror code {
+  background: rgba(99,102,241,0.08);
+  border-radius: 6px;
+  padding: 2px 7px;
+  font-size: 12px;
+  font-family: 'SF Mono', 'Monaco', 'Menlo', 'Consolas', 'Courier New', monospace;
+  color: #6366f1;
+  font-weight: 500;
+}
+[data-theme='dark'] .editor-content .ProseMirror code {
+  background: rgba(99,102,241,0.15);
+  color: #a5b4fc;
+}
+
+.editor-content .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: currentColor;
+  opacity: 0.3;
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+/* ── Resize handle ───────────────────────── */
+.resize-handle {
+  transition: opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.resize-handle:hover {
+  opacity: 1 !important;
+  transform: scale(1.1);
+}
+.resize-handle:active {
+  transform: scale(0.95);
+}
+
+/* ── Scrollbar ───────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+[data-theme='dark'] ::-webkit-scrollbar-thumb { background: #374151; }
+[data-theme='dark'] ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Highlights ──────────────────────────── */
+mark {
+  background: linear-gradient(120deg, #fef08a 0%, #fde047 100%);
+  border-radius: 3px;
+  padding: 1px 3px;
+  color: #000;
+  box-shadow: 0 0 0 2px rgba(253, 224, 71, 0.2);
+}
+[data-theme='dark'] mark {
+  background: linear-gradient(120deg, #854d0e 0%, #a16207 100%);
+  color: #fef08a;
+  box-shadow: 0 0 0 2px rgba(133, 77, 14, 0.3);
+}
+
+/* ── Animations ──────────────────────────── */
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+@keyframes slideUp {
+  from { opacity:0; transform:translate(-50%,16px) scale(0.96); }
+  to { opacity:1; transform:translate(-50%,0) scale(1); }
+}
+@keyframes fadeIn {
+  from { opacity:0; }
+  to { opacity:1; }
+}
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* ── Mobile ──────────────────────────────── */
+@media (max-width: 768px) {
+  .card {
+    width:100% !important;
+    position:relative !important;
+    left:auto !important;
+    top:auto !important;
+    min-height:auto !important;
+  }
+  body {
+    font-size: 16px; /* Prevents iOS zoom on input focus */
+  }
+}
+
+/* ── Touch improvements ──────────────────── */
+@media (hover: none) and (pointer: coarse) {
+  .card-btn,
+  .editor-toolbar button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
